@@ -2,7 +2,8 @@ import { WEIGHT_MILESTONE_STEP } from './constants'
 import type { WeightEntry, WeightMilestone, WeightProgress, NextMilestoneInfo } from './types'
 
 export function formatWeightValue(weight: number, unit: 'lb' | 'kg' = 'lb'): string {
-  return `${weight.toFixed(1)} ${unit}`
+  const rounded = Math.round(weight * 10) / 10
+  return `${rounded.toFixed(1)} ${unit}`
 }
 
 export function getLatestEntry(entries: WeightEntry[]): WeightEntry | null {

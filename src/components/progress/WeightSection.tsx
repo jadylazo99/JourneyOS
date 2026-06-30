@@ -6,11 +6,27 @@ import { formatPercent, formatPounds, formatWeightNumber } from '@/utils/format'
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 flex-1 text-center px-1">
+    <div className="min-w-0 flex-1 px-1" style={{ textAlign: 'center', overflowWrap: 'anywhere' }}>
       <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1 leading-tight">
         {label}
       </p>
-      <p className="text-base sm:text-xl font-semibold tracking-tight text-primary tabular-nums break-words">
+      <p className="text-base sm:text-xl font-semibold tracking-tight text-primary tabular-nums">
+        {value}
+      </p>
+    </div>
+  )
+}
+
+function WeightSummaryMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="min-w-0 w-full rounded-xl border border-slate-100 bg-white/70 px-4 py-3 sm:border-0 sm:bg-transparent sm:px-1 sm:py-0"
+      style={{ textAlign: 'center', overflowWrap: 'anywhere' }}
+    >
+      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1 leading-tight">
+        {label}
+      </p>
+      <p className="text-lg sm:text-xl font-semibold tracking-tight text-primary tabular-nums">
         {value}
       </p>
     </div>
@@ -83,10 +99,19 @@ export function WeightSection() {
         </div>
 
         <div className="rounded-2xl bg-slate-50/80 p-3 sm:p-4 border border-slate-100">
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            <StatCell label="To lose" value={formatPounds(progress.totalPoundsToLose)} />
-            <StatCell label="Lost" value={formatPounds(progress.poundsLost)} />
-            <StatCell label="Remaining" value={formatPounds(progress.poundsRemaining)} />
+          <div className="flex flex-col gap-2 sm:grid sm:grid-cols-3 sm:gap-3">
+            <WeightSummaryMetric
+              label="To Lose"
+              value={formatPounds(progress.totalPoundsToLose)}
+            />
+            <WeightSummaryMetric
+              label="Lost"
+              value={formatPounds(progress.poundsLost)}
+            />
+            <WeightSummaryMetric
+              label="Remaining"
+              value={formatPounds(progress.poundsRemaining)}
+            />
           </div>
         </div>
 
