@@ -269,6 +269,9 @@ export function loadOnboardingData(): StoredOnboardingData | null {
 
 export function saveOnboardingData(data: StoredOnboardingData): void {
   localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(data))
+  import('@/services/cloudSyncService').then(({ queueCloudSync }) => {
+    queueCloudSync('profile')
+  })
 }
 
 export function persistProfile(profile: UserProfile, onboardingComplete: boolean): void {

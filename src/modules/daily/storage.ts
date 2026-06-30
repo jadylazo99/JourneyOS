@@ -70,6 +70,9 @@ export function loadDailyStore(): DailyRecordsStore {
 
 export function saveDailyStore(store: DailyRecordsStore): void {
   localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(store))
+  import('@/services/cloudSyncService').then(({ queueCloudSync }) => {
+    queueCloudSync('daily')
+  })
 }
 
 export function isRecordLocked(record: DayRecord): boolean {

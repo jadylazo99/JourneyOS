@@ -17,6 +17,7 @@ import {
   ProfileThemeSection,
   ProfileMemorySection,
   ProfileNotificationsSection,
+  ProfileAccountSection,
 } from '@/components/profile'
 import { useProfileStore } from '@/modules/profile'
 import { useIntelligenceStore } from '@/modules/intelligence'
@@ -60,6 +61,10 @@ export function ProfilePage() {
 
       <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>
         <ProfileHero />
+      </motion.div>
+
+      <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>
+        <ProfileAccountSection />
       </motion.div>
 
       <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>

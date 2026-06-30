@@ -1,3 +1,4 @@
+export { ProfileAccountSection } from './ProfileAccountSection'
 export { CollapsibleSection } from './CollapsibleSection'
 export {
   ProfileHero,
