@@ -18,6 +18,7 @@ export type GuidedContext = {
   schedule: ScheduleContext
   firstName: string
   petName: string | null
+  petsAtHome: boolean
   nutritionEnabled: boolean
   fitnessEnabled: boolean
   petsEnabled: boolean
@@ -84,12 +85,18 @@ function buildContext(record: DayRecord): GuidedContext {
     ? getNextExam(profile.journeyMemory.study)
     : null
 
+  const petsAtHome =
+    profile != null &&
+    isModuleEnabled(profile, 'pets') &&
+    profile.vacation.travelingWithPets === false
+
   return {
     record,
     dayMode,
     schedule,
     firstName: profile?.firstName || 'there',
     petName,
+    petsAtHome,
     nutritionEnabled: profile ? isModuleEnabled(profile, 'nutrition') : false,
     fitnessEnabled: profile ? isModuleEnabled(profile, 'fitness') : false,
     petsEnabled: profile ? isModuleEnabled(profile, 'pets') : false,
@@ -306,12 +313,34 @@ function vacationTasks(ctx: GuidedContext): GuidedTask[] {
   )
 
   tasks.push(
+    makeTask(
+      ctx,
+      'movement',
+      'Stretch or hotel gym',
+      'Optional light movement — walk, stretch, or use a hotel gym if you feel like it.',
+      'Mark done',
+    ),
+  )
+
+  tasks.push(
     makeTask(ctx, 'hydration', 'Hydration', 'Travel days dehydrate quickly. Drink up.', 'Log water'),
   )
 
   if (ctx.nutritionEnabled) {
     tasks.push(
       makeTask(ctx, 'protein', 'Protein first', 'Prioritize protein when you eat today.', 'Log protein'),
+    )
+  }
+
+  if (ctx.petsAtHome && ctx.petName) {
+    tasks.push(
+      makeTask(
+        ctx,
+        'check_in',
+        'Pets at home',
+        `Check in on care for ${ctx.petName} while you're away.`,
+        'Mark done',
+      ),
     )
   }
 

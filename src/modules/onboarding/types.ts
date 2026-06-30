@@ -80,10 +80,15 @@ export type FoodPreferences = {
 
 export type VacationSettings = {
   active: boolean
+  name: string
   startDate: string
   endDate: string
   destination: string
+  timezone: string
+  travelingWithPets: boolean | null
   notes: string
+  /** When set to a date key, vacation mode is off for that day only */
+  pausedForDate: string
 }
 
 export type ThemeSettings = {

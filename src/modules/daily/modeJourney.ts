@@ -66,11 +66,11 @@ export const MODE_JOURNEYS: Record<DayModeId, ModeJourneyConfig> = {
     label: 'Vacation',
     focus: 'Be present. Structure can wait.',
     journeyItems: [
-      'Weigh-ins hidden today',
-      'Walking instead of workouts',
+      'Weigh-ins optional today',
+      'Walking instead of intense workouts',
       'Capture a photo memory',
       'Stay hydrated',
-      'Local restaurant suggestions coming soon',
+      'Enjoy the trip',
     ],
     nextAction: {
       title: 'Be present',

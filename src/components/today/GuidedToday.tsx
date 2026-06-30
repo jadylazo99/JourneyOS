@@ -4,7 +4,9 @@ import { useDailyStore } from '@/modules/daily'
 import { usePetsStore } from '@/modules/pets'
 import { useProfileStore } from '@/modules/profile'
 import { StudyTodayPanel } from './StudyTodayPanel'
+import { VacationTodayPanel } from './VacationTodayPanel'
 import { useIntelligenceStore } from '@/modules/intelligence'
+import { getVacationGreeting, isVacationPausedToday } from '@/modules/intelligence/vacation/engine'
 import { TravelIntelligencePrompt } from '@/components/intelligence'
 import { MomentumDisplay } from './MomentumDisplay'
 import { GuidedStepCard } from './GuidedStepCard'
@@ -28,6 +30,9 @@ export function GuidedToday() {
   const getGuidedJourneyMessage = useDailyStore((s) => s.getGuidedJourneyMessage)
   const isGuidedDayComplete = useDailyStore((s) => s.isGuidedDayComplete)
   const isModuleEnabled = useProfileStore((s) => s.isModuleEnabled)
+  const vacation = useProfileStore((s) => s.profile.vacation)
+  const firstName = useProfileStore((s) => s.profile.firstName)
+  const lifeEngineSettings = useDailyStore((s) => s.lifeEngineSettings)
   const ensurePetTasks = usePetsStore((s) => s.ensureTodayTasks)
 
   const showTravel = useIntelligenceStore((s) => s.showTravelPrompt)
@@ -64,6 +69,12 @@ export function GuidedToday() {
   }
 
   const showStudyPanel = isModuleEnabled('study') && showMainFlow && !allDone
+  const vacationToday =
+    todayRecord.dayMode.mode === 'vacation' ||
+    (lifeEngineSettings.vacationModeEnabled && !isVacationPausedToday(vacation))
+  const headerGreeting = vacationToday
+    ? getVacationGreeting(vacation, firstName || 'there')
+    : getGreetingText()
 
   return (
     <div className="flex flex-col flex-1 max-w-[560px] mx-auto w-full">
@@ -74,8 +85,11 @@ export function GuidedToday() {
       >
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-white leading-tight">
-            {getGreetingText()}
+            {headerGreeting}
           </h1>
+          {vacationToday && vacation.destination.trim() && (
+            <p className="text-sm text-white/55 mt-1">{vacation.destination.trim()}</p>
+          )}
           <p className="text-sm text-white/45 mt-1">{getDateLabel()}</p>
         </div>
 
@@ -96,6 +110,8 @@ export function GuidedToday() {
           </div>
         )}
       </motion.header>
+
+      {vacationToday && showMainFlow && <VacationTodayPanel />}
 
       {showStudyPanel && <StudyTodayPanel />}
 

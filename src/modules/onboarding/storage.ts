@@ -46,10 +46,14 @@ export function emptyFoodPreferences(): FoodPreferences {
 export function emptyVacationSettings(): VacationSettings {
   return {
     active: false,
+    name: '',
     startDate: '',
     endDate: '',
     destination: '',
+    timezone: '',
+    travelingWithPets: null,
     notes: '',
+    pausedForDate: '',
   }
 }
 

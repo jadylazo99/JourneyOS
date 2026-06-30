@@ -25,8 +25,13 @@ import { emptyPet } from '@/modules/pets/petUtils'
 import { useAchievementStore } from '@/modules/achievements/store'
 import { getTimelineMessage } from '@/modules/achievements/messages'
 import { useDailyStore } from '@/modules/daily/store'
+import { getLocalDateKey } from '@/modules/daily/date'
 import { useNutritionStore } from '@/modules/nutrition/store'
 import { useIntelligenceStore } from '@/modules/intelligence'
+import {
+  shouldAutoActivateVacation,
+  isVacationPausedToday,
+} from '@/modules/intelligence/vacation/engine'
 import type { JourneyMemory } from '@/modules/onboarding/types'
 
 function applyTheme(theme: ThemeSettings): void {
@@ -50,6 +55,9 @@ interface ProfileStore {
   updateNutritionGoals: (partial: Partial<NutritionGoals>) => void
   updateFitness: (partial: Partial<FitnessSettings>) => void
   updateVacation: (partial: Partial<VacationSettings>) => void
+  endVacationEarly: () => void
+  pauseVacationToday: () => void
+  resumeVacationToday: () => void
   updateTheme: (partial: Partial<ThemeSettings>) => void
   updateJourneyMemory: (partial: Partial<JourneyMemory>) => void
   updatePreferredUnits: (partial: Partial<PreferredUnits>) => void
@@ -64,8 +72,11 @@ interface ProfileStore {
 
 function syncVacationToDaily(profile: UserProfile): void {
   const store = loadDailyStore()
+  const todayKey = getLocalDateKey()
+  const inRange = shouldAutoActivateVacation(profile.vacation, todayKey)
+  const paused = isVacationPausedToday(profile.vacation, todayKey)
   store.lifeEngineSettings.vacationModeEnabled =
-    isModuleEnabled(profile, 'travel') && profile.vacation.active
+    profile.vacation.active && inRange && !paused
   saveDailyStore(store)
 }
 
@@ -205,6 +216,32 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         category: 'travel',
       })
     }
+
+    useDailyStore.getState().hydrate()
+    useIntelligenceStore.getState().hydrate()
+  },
+
+  endVacationEarly: () => {
+    const todayKey = getLocalDateKey()
+    get().updateVacation({
+      active: false,
+      endDate: todayKey,
+      pausedForDate: '',
+    })
+    useDailyStore.getState().setVacationMode(false)
+    useDailyStore.getState().setTodayMode('normal')
+  },
+
+  pauseVacationToday: () => {
+    const todayKey = getLocalDateKey()
+    get().updateVacation({ pausedForDate: todayKey })
+    useDailyStore.getState().setVacationMode(false)
+    useDailyStore.getState().setTodayMode('normal')
+  },
+
+  resumeVacationToday: () => {
+    get().updateVacation({ pausedForDate: '', active: true })
+    useDailyStore.getState().setVacationMode(true)
   },
 
   updateTheme: (partial) => {

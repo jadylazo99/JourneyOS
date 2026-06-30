@@ -9,7 +9,17 @@ export { derivePatterns } from './learning/patterns'
 export { createObservation } from './learning/observations'
 export { resolveTravelLocation, detectTimezoneChange } from './travel/detect'
 export { shouldShowTravelPrompt, travelResponseToDayMode } from './travel/engine'
-export { syncVacationFromProfile, shouldAutoActivateVacation, vacationGuidedOverrides, isVacationDayMode } from './vacation/engine'
+export {
+  syncVacationFromProfile,
+  shouldAutoActivateVacation,
+  isDateInVacationRange,
+  isScheduledVacationDay,
+  isVacationPausedToday,
+  getVacationGreeting,
+  applyVacationToToday,
+  vacationGuidedOverrides,
+  isVacationDayMode,
+} from './vacation/engine'
 export { buildWeeklyReview, getWeeklyReviewCards, isSundayEvening, weeklyReviewId } from './review/weekly'
 export { buildMonthlyReview, getCurrentMonthlyReview, isEndOfMonth, monthlyReviewId } from './review/monthly'
 export { shouldDeliverNotification, isQuietHours } from './notifications/preferences'

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
+import { getLocalDateKey } from '@/modules/daily/date'
 import { useProfileStore } from '@/modules/profile'
 import { useStudyStore } from '@/modules/study'
 import { FOCUS_AREA_OPTIONS } from '@/modules/modules/focusAreas'
@@ -645,25 +646,29 @@ export function ProfilePetsSection() {
 export function ProfileVacationSection() {
   const vacation = useProfileStore((s) => s.profile.vacation)
   const updateVacation = useProfileStore((s) => s.updateVacation)
-  const travelEnabled = useProfileStore((s) => s.isModuleEnabled('travel'))
-
-  if (!travelEnabled) {
-    return (
-      <CollapsibleSection title="Vacation" description="Enable Travel module to configure">
-        <p className="text-sm text-slate-500">
-          Turn on the Travel module to set vacation dates and destination.
-        </p>
-      </CollapsibleSection>
-    )
-  }
+  const endVacationEarly = useProfileStore((s) => s.endVacationEarly)
+  const todayKey = getLocalDateKey()
+  const inRange =
+    vacation.startDate &&
+    todayKey >= vacation.startDate &&
+    todayKey <= (vacation.endDate || vacation.startDate)
 
   return (
-    <CollapsibleSection title="Vacation Settings" description="Plan time away">
+    <CollapsibleSection title="Vacation" description="Plan time away and vacation mode">
       <div>
-        <FieldLabel>Vacation mode active</FieldLabel>
-        <YesNoToggle
-          value={vacation.active}
-          onChange={(v) => updateVacation({ active: v })}
+        <FieldLabel>Trip name</FieldLabel>
+        <FieldInput
+          value={vacation.name}
+          onChange={(v) => updateVacation({ name: v })}
+          placeholder="Summer getaway, family visit…"
+        />
+      </div>
+      <div>
+        <FieldLabel>Destination</FieldLabel>
+        <FieldInput
+          value={vacation.destination}
+          onChange={(v) => updateVacation({ destination: v })}
+          placeholder="City, region, or country"
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -685,22 +690,47 @@ export function ProfileVacationSection() {
         </div>
       </div>
       <div>
-        <FieldLabel>Destination</FieldLabel>
+        <FieldLabel>Timezone (optional)</FieldLabel>
         <FieldInput
-          value={vacation.destination}
-          onChange={(v) => updateVacation({ destination: v })}
-          placeholder="Europe, beach house…"
+          value={vacation.timezone}
+          onChange={(v) => updateVacation({ timezone: v })}
+          placeholder="America/New_York, Europe/Paris…"
         />
       </div>
       <div>
-        <FieldLabel>Notes</FieldLabel>
+        <FieldLabel>Traveling with pets?</FieldLabel>
+        <YesNoToggle
+          value={vacation.travelingWithPets}
+          onChange={(v) => updateVacation({ travelingWithPets: v })}
+        />
+        <p className="text-xs text-slate-500 mt-1.5">
+          If pets stay home, Today will remind you to check on their care.
+        </p>
+      </div>
+      <div>
+        <FieldLabel>Notes (optional)</FieldLabel>
         <FieldTextarea
           value={vacation.notes}
           onChange={(v) => updateVacation({ notes: v })}
-          placeholder="Anything about this trip…"
+          placeholder="Flight info, hotel, sitter contact…"
           rows={2}
         />
       </div>
+      {vacation.active && inRange && (
+        <div className="rounded-2xl border border-blue/20 bg-blue/5 p-4 space-y-3">
+          <p className="text-sm font-medium text-slate-800">
+            Vacation mode is active through{' '}
+            {vacation.endDate || vacation.startDate}.
+          </p>
+          <button
+            type="button"
+            onClick={endVacationEarly}
+            className="w-full rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
+          >
+            End vacation early
+          </button>
+        </div>
+      )}
     </CollapsibleSection>
   )
 }

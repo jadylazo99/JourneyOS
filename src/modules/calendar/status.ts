@@ -1,5 +1,6 @@
 import { getDayConsistencyScore } from '@/modules/daily/consistency'
 import { getLocalDateKey, isPastDateKey } from '@/modules/daily/date'
+import { isScheduledVacationDay } from '@/modules/intelligence/vacation/engine'
 import type { DayRecord } from '@/modules/daily/types'
 import type { DayStatus, DayStatusConfig } from './types'
 
@@ -46,6 +47,9 @@ export function getDayStatus(
   const today = getLocalDateKey()
 
   if (dateKey > today) return 'empty'
+
+  if (isScheduledVacationDay(dateKey)) return 'vacation'
+
   if (!record) return 'empty'
 
   const mode = record.dayMode.mode

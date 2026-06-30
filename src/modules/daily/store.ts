@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { recordIntelligenceObservation } from '@/modules/intelligence'
+import { recordIntelligenceObservation, useIntelligenceStore } from '@/modules/intelligence'
+import { applyVacationToToday } from '@/modules/intelligence/vacation/engine'
 import { loadOnboardingData } from '@/modules/onboarding/storage'
 import { isModuleEnabled } from '@/modules/modules/engine'
 import { emptyWorkSchedule } from '@/modules/onboarding/storage'
@@ -177,6 +178,8 @@ export const useDailyStore = create<DailyStore>((set, get) => ({
     reconcileTravelWeighIn(store.homeTimezone, currentTz)
     syncHomeTimezoneAfterTravel()
 
+    useIntelligenceStore.getState().hydrate()
+
     let todayRecord = store.records[todayKey]
     if (!todayRecord) {
       todayRecord = createDayRecord(currentTz)
@@ -216,6 +219,10 @@ export const useDailyStore = create<DailyStore>((set, get) => ({
 
       todayRecord = { ...todayRecord, timezone: currentTz }
     }
+
+    const vacationApplied = applyVacationToToday(todayRecord, store.lifeEngineSettings)
+    todayRecord = vacationApplied.record
+    store.lifeEngineSettings = vacationApplied.lifeEngineSettings
 
     store.records[todayKey] = todayRecord
     store.lastKnownTimezone = currentTz
@@ -435,7 +442,13 @@ export const useDailyStore = create<DailyStore>((set, get) => ({
     set({ lifeEngineSettings: { ...store.lifeEngineSettings } })
 
     const record = get().todayRecord
-    if (record && !isRecordLocked(record) && !record.dayMode.userConfirmed) {
+    if (!record || isRecordLocked(record)) return
+
+    if (enabled) {
+      get().setTodayMode('vacation')
+    } else if (record.dayMode.mode === 'vacation') {
+      get().setTodayMode('normal')
+    } else {
       get().hydrate()
     }
   },
