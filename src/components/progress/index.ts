@@ -1,4 +1,5 @@
 export { WeightSection } from './WeightSection'
+export { StudySection } from './StudySection'
 export { WeightChart } from './WeightChart'
 export { AchievementsSection, AchievementsSummaryCard } from './AchievementsSection'
 export { JourneyTimeline } from './JourneyTimeline'

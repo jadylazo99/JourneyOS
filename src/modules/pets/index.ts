@@ -1,6 +1,6 @@
 export { usePetsStore } from './store'
 export { PET_TASK_ACTIONS } from './types'
-export { applyBrunoDefaults, emptyPet, normalizePet, isJadyProfile } from './petUtils'
+export { emptyPet, normalizePet, createPetId } from './petUtils'
 export type {
   PetTask,
   PetTaskType,

@@ -69,7 +69,7 @@ export function GuidedStepCard({ task }: GuidedStepCardProps) {
                 value={weighInInput}
                 onChange={setWeighInInput}
                 onSubmit={handlePrimary}
-                placeholder="236.8"
+                placeholder="132.4"
                 size="md"
               />
               <div className="grid grid-cols-1 gap-2">

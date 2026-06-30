@@ -11,7 +11,7 @@ export function OnboardingWeightInput({
   value,
   onChange,
   onSubmit,
-  placeholder = '236.8',
+  placeholder = '132.4',
 }: OnboardingWeightInputProps) {
   return (
     <WeightInput

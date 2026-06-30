@@ -1,7 +1,7 @@
 import { ONBOARDING_STORAGE_KEY } from './constants'
 import { DEFAULT_ENABLED_MODULES } from '@/modules/modules/constants'
-import { getJadyDefaults, isJadyProfile } from '@/modules/fitness/jadyPlan'
-import { applyBrunoDefaults, normalizePet } from '@/modules/pets/petUtils'
+import { syncModulesFromFocusAreas } from '@/modules/modules/focusAreas'
+import { normalizePet } from '@/modules/pets/petUtils'
 import type { Pet } from './types'
 import type {
   FitnessMemory,
@@ -15,6 +15,7 @@ import type {
   StudyPreferences,
   ThemeSettings,
   TravelHabits,
+  FocusAreaId,
   UserProfile,
   VacationSettings,
   WorkSchedule,
@@ -145,6 +146,7 @@ export const emptyProfile = (): UserProfile => ({
   pets: [],
   preferredUnits: emptyPreferredUnits(),
   enabledModules: [...DEFAULT_ENABLED_MODULES],
+  focusAreas: [...DEFAULT_ENABLED_MODULES],
   foodPreferences: emptyFoodPreferences(),
   nutritionGoals: emptyNutritionGoals(),
   fitness: emptyFitnessSettings(),
@@ -189,23 +191,22 @@ function normalizeProfile(stored: Partial<UserProfile>): UserProfile {
       works: works === true,
     },
     works: stored.works ?? works,
-    pets: (stored.pets ?? []).map((pet) => {
-      const normalized = normalizePet(pet as Pet)
-      if (
-        isJadyProfile(stored.firstName ?? '') &&
-        normalized.name.trim().toLowerCase() === 'bruno' &&
-        !normalized.breed
-      ) {
-        return applyBrunoDefaults(normalized)
-      }
-      return normalized
-    }),
+    pets: (stored.pets ?? []).map((pet) => normalizePet(pet as Pet)),
     preferredUnits: {
       ...emptyPreferredUnits(),
       ...stored.preferredUnits,
     },
     enabledModules:
       stored.enabledModules?.length ? stored.enabledModules : [...DEFAULT_ENABLED_MODULES],
+    focusAreas: (() => {
+      if (stored.focusAreas?.length) return stored.focusAreas
+      const modules = stored.enabledModules?.length
+        ? stored.enabledModules
+        : [...DEFAULT_ENABLED_MODULES]
+      const areas: FocusAreaId[] = [...modules]
+      if (stored.mainGoal?.trim()) areas.push('custom')
+      return areas
+    })(),
     foodPreferences,
     nutritionGoals: {
       ...emptyNutritionGoals(),
@@ -241,13 +242,10 @@ function normalizeProfile(stored: Partial<UserProfile>): UserProfile {
     },
   }
 
-  if (
-    isJadyProfile(profile.firstName) &&
-    profile.fitness.equipment.length === 0
-  ) {
-    const jady = getJadyDefaults()
-    profile.fitness = { ...profile.fitness, ...jady }
-    profile.gymAccess = true
+  profile.enabledModules = syncModulesFromFocusAreas(profile.focusAreas)
+  if (!profile.enabledModules.length) {
+    profile.enabledModules = [...DEFAULT_ENABLED_MODULES]
+    profile.focusAreas = [...DEFAULT_ENABLED_MODULES]
   }
 
   return syncLegacyFoodStrings(profile)

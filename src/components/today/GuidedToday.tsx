@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useDailyStore } from '@/modules/daily'
 import { usePetsStore } from '@/modules/pets'
+import { useProfileStore } from '@/modules/profile'
+import { StudyTodayPanel } from './StudyTodayPanel'
 import { useIntelligenceStore } from '@/modules/intelligence'
 import { TravelIntelligencePrompt } from '@/components/intelligence'
 import { MomentumDisplay } from './MomentumDisplay'
@@ -25,6 +27,7 @@ export function GuidedToday() {
   const getMomentumSummary = useDailyStore((s) => s.getMomentumSummary)
   const getGuidedJourneyMessage = useDailyStore((s) => s.getGuidedJourneyMessage)
   const isGuidedDayComplete = useDailyStore((s) => s.isGuidedDayComplete)
+  const isModuleEnabled = useProfileStore((s) => s.isModuleEnabled)
   const ensurePetTasks = usePetsStore((s) => s.ensureTodayTasks)
 
   const showTravel = useIntelligenceStore((s) => s.showTravelPrompt)
@@ -60,6 +63,8 @@ export function GuidedToday() {
     if (mode) confirmTodayMode(mode)
   }
 
+  const showStudyPanel = isModuleEnabled('study') && showMainFlow && !allDone
+
   return (
     <div className="flex flex-col flex-1 max-w-[560px] mx-auto w-full">
       <motion.header
@@ -91,6 +96,8 @@ export function GuidedToday() {
           </div>
         )}
       </motion.header>
+
+      {showStudyPanel && <StudyTodayPanel />}
 
       <div className="flex-1 flex flex-col justify-center min-h-[280px]">
         <AnimatePresence mode="wait">

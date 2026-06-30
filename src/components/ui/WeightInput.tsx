@@ -19,7 +19,7 @@ export function WeightInput({
   value,
   onChange,
   onSubmit,
-  placeholder = '236.8',
+  placeholder = '132.4',
   autoFocus = false,
   className,
   inputClassName,

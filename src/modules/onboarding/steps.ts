@@ -33,9 +33,9 @@ const BASE_STEPS: OnboardingStep[] = [
   {
     id: 'currentWeight',
     title: 'What is your current weight?',
-    subtitle: 'Enter your exact weight, e.g. 236.8 lb.',
+    subtitle: 'Enter your exact weight, e.g. 132.4 lb.',
     inputType: 'weight',
-    placeholder: '236.8',
+    placeholder: '132.4',
     field: 'currentWeight',
   },
   {

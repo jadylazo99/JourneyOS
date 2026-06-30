@@ -53,8 +53,9 @@ export function buildDailyNotificationSchedule(
   add('protein', 'Protein reminder', 'Fuel that supports your goal.', '13:00')
   add('night_reflection', 'Evening reflection', 'What felt good today?', profile.bedtime || '21:30')
 
-  if (profile.hasPets) {
-    add('pet', 'Pet care', 'Bruno might appreciate a walk or check-in.', '08:00')
+  if (profile.hasPets && profile.pets.length > 0) {
+    const petName = profile.pets[0]?.name?.trim() || 'your pet'
+    add('pet', 'Pet care', `${petName} might appreciate a walk or check-in.`, '08:00')
   }
 
   return scheduled

@@ -16,4 +16,5 @@ export {
   ProfileThemeSection,
   ProfileMemorySection,
   ProfileNotificationsSection,
+  ProfileStudySettingsSection,
 } from './ProfileSections'

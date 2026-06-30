@@ -19,7 +19,7 @@ export function WeighInPrompt({ value, onChange, onLog, onSkip, canLog }: WeighI
         value={value}
         onChange={onChange}
         onSubmit={onLog}
-        placeholder="236.8"
+        placeholder="132.4"
         size="md"
       />
 

@@ -7,6 +7,7 @@ import {
   ProfileHealthSection,
   ProfileGoalsSection,
   ProfileModulesSection,
+  ProfileStudySettingsSection,
   ProfileScheduleSection,
   ProfileWorkScheduleSection,
   ProfileFitnessSection,
@@ -81,6 +82,10 @@ export function ProfilePage() {
 
       <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>
         <ProfileGoalsSection />
+      </motion.div>
+
+      <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>
+        <ProfileStudySettingsSection />
       </motion.div>
 
       <motion.div variants={fadeUp} transition={{ duration: 0.4 }}>

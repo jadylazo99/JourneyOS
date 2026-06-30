@@ -2,15 +2,17 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useWeightStore, formatWeightValue } from '@/modules/weight'
 import { Card } from '@/components/ui'
-import { formatPercent, formatPounds } from '@/utils/format'
+import { formatPercent, formatPounds, formatWeightNumber } from '@/utils/format'
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="text-center">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+    <div className="min-w-0 flex-1 text-center px-1">
+      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1 leading-tight">
         {label}
       </p>
-      <p className="text-xl font-semibold tracking-tight text-primary tabular-nums">{value}</p>
+      <p className="text-base sm:text-xl font-semibold tracking-tight text-primary tabular-nums break-words">
+        {value}
+      </p>
     </div>
   )
 }
@@ -65,7 +67,7 @@ export function WeightSection() {
       />
 
       <div className="relative space-y-6">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <StatCell
             label="Current"
             value={formatWeightValue(progress.currentWeight!, unit)}
@@ -80,25 +82,18 @@ export function WeightSection() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 rounded-2xl bg-slate-50/80 p-4 border border-slate-100">
-          <StatCell
-            label="To lose"
-            value={formatPounds(progress.totalPoundsToLose)}
-          />
-          <StatCell
-            label="Lost"
-            value={formatPounds(progress.poundsLost)}
-          />
-          <StatCell
-            label="Remaining"
-            value={formatPounds(progress.poundsRemaining)}
-          />
+        <div className="rounded-2xl bg-slate-50/80 p-3 sm:p-4 border border-slate-100">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <StatCell label="To lose" value={formatPounds(progress.totalPoundsToLose)} />
+            <StatCell label="Lost" value={formatPounds(progress.poundsLost)} />
+            <StatCell label="Remaining" value={formatPounds(progress.poundsRemaining)} />
+          </div>
         </div>
 
         {nextMilestone && (
           <div className="space-y-3">
-            <div className="flex items-end justify-between gap-4">
-              <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="min-w-0">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   Next 5 lb milestone
                 </p>
@@ -106,7 +101,7 @@ export function WeightSection() {
                   {formatWeightValue(nextMilestone.targetWeight ?? progress.goalWeight!, unit)}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="sm:text-right min-w-0">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   Remaining
                 </p>
@@ -126,7 +121,7 @@ export function WeightSection() {
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 tabular-nums">
-                Start {progress.startWeight}
+                Start {formatWeightNumber(progress.startWeight!)} {unit}
               </span>
               {milestones.slice(0, 8).map((m) => (
                 <span
@@ -137,7 +132,7 @@ export function WeightSection() {
                       : 'bg-slate-100 text-slate-400'
                   }`}
                 >
-                  {m.targetWeight}
+                  {formatWeightNumber(m.targetWeight)}
                 </span>
               ))}
               {milestones.length > 8 && (
@@ -146,7 +141,7 @@ export function WeightSection() {
                 </span>
               )}
               <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue/10 to-accent/10 px-3 py-1 text-xs font-semibold text-blue tabular-nums">
-                Goal {progress.goalWeight}
+                Goal {formatWeightNumber(progress.goalWeight!)} {unit}
               </span>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { PageHeader, Section } from '@/components/ui'
 import {
   WeightSection,
   WeightChart,
+  StudySection,
   AchievementsSection,
   AchievementsSummaryCard,
   JourneyCalendar,
@@ -12,6 +13,7 @@ import { useDailyStore } from '@/modules/daily'
 import { useWeightStore } from '@/modules/weight'
 import { useAchievementStore } from '@/modules/achievements'
 import { useProfileStore } from '@/modules/profile'
+import { useStudyStore } from '@/modules/study'
 
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
@@ -23,6 +25,7 @@ export function ProgressPage() {
   const hydrateAchievements = useAchievementStore((s) => s.hydrate)
   const hydrateProfile = useProfileStore((s) => s.hydrate)
   const hydrateDaily = useDailyStore((s) => s.hydrate)
+  const hydrateStudy = useStudyStore((s) => s.hydrate)
   const weightHydrated = useWeightStore((s) => s.hydrated)
   const achievementsHydrated = useAchievementStore((s) => s.hydrated)
   const profileHydrated = useProfileStore((s) => s.hydrated)
@@ -34,7 +37,8 @@ export function ProgressPage() {
     hydrateAchievements()
     hydrateProfile()
     hydrateDaily()
-  }, [hydrateWeight, hydrateAchievements, hydrateProfile, hydrateDaily])
+    hydrateStudy()
+  }, [hydrateWeight, hydrateAchievements, hydrateProfile, hydrateDaily, hydrateStudy])
 
   if (!weightHydrated || !achievementsHydrated || !profileHydrated || !dailyHydrated) {
     return (
@@ -45,6 +49,7 @@ export function ProgressPage() {
   }
 
   const showWeight = isModuleEnabled('weight_loss')
+  const showStudy = isModuleEnabled('study')
 
   return (
     <motion.div
@@ -56,7 +61,7 @@ export function ProgressPage() {
       <motion.div variants={fadeUp} transition={{ duration: 0.45 }}>
         <PageHeader
           title="Progress"
-          subtitle="Weight, milestones, and achievements"
+          subtitle="Track your journey across focus areas"
         />
       </motion.div>
 
@@ -67,6 +72,14 @@ export function ProgressPage() {
               <WeightSection />
               <WeightChart />
             </div>
+          </Section>
+        </motion.div>
+      )}
+
+      {showStudy && (
+        <motion.div variants={fadeUp} transition={{ duration: 0.45 }}>
+          <Section title="Study" description="Sessions, streaks, and practice scores">
+            <StudySection />
           </Section>
         </motion.div>
       )}

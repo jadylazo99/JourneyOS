@@ -5,6 +5,13 @@ export {
   DEFAULT_ENABLED_MODULES,
 } from './constants'
 export {
+  FOCUS_AREA_OPTIONS,
+  syncModulesFromFocusAreas,
+  isFocusAreaSelected,
+  focusAreaToModuleId,
+} from './focusAreas'
+export type { FocusAreaId } from './focusAreas'
+export {
   ACHIEVEMENT_CATEGORY_MODULE,
   isModuleEnabled,
   isAchievementCategoryVisible,

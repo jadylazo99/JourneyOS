@@ -63,7 +63,7 @@ export const PET_TASK_ACTIONS: {
   label: string
   message: string
 }[] = [
-  { status: 'completed', label: 'Completed', message: 'Nice work — Bruno appreciates it.' },
+  { status: 'completed', label: 'Completed', message: 'Nice work — task complete.' },
   { status: 'skipped', label: 'Skipped', message: 'No problem. Tomorrow is a new day.' },
   { status: 'rescheduled', label: 'Rescheduled', message: 'Moved to another time. Still counts as planning ahead.' },
   { status: 'not_needed', label: 'Not needed today', message: 'Got it — not every task fits every day.' },

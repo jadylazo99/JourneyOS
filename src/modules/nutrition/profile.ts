@@ -1,13 +1,8 @@
 import type { UserProfile } from '@/modules/onboarding/types'
-import { applyJadyDefaults, isJadyProfile } from './defaults'
 import type { NutritionProfile } from './types'
 
 export function buildNutritionProfile(profile: UserProfile): NutritionProfile {
-  let food = profile.foodPreferences
-
-  if (isJadyProfile(profile.firstName)) {
-    food = applyJadyDefaults(food)
-  }
+  const food = profile.foodPreferences
 
   return {
     foodsLove: food.foodsLove,

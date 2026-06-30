@@ -1,4 +1,3 @@
-import { JADY_WEEKLY_PLAN } from './jadyPlan'
 import type { WorkoutExercise, WorkoutPlan } from './types'
 
 function ex(
@@ -98,7 +97,7 @@ export const DEFAULT_WEEKLY_PLAN: WorkoutPlan[] = [
   },
 ]
 
-export function getPlanForWeekday(weekday: string, useJady: boolean): WorkoutPlan | null {
-  const plans = useJady ? JADY_WEEKLY_PLAN : DEFAULT_WEEKLY_PLAN
+export function getPlanForWeekday(weekday: string, _useJady = false): WorkoutPlan | null {
+  const plans = DEFAULT_WEEKLY_PLAN
   return plans.find((p) => p.weekday === weekday) ?? null
 }

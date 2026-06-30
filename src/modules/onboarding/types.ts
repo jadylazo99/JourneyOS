@@ -63,6 +63,8 @@ export type ModuleId =
   | 'work'
   | 'home'
 
+export type FocusAreaId = ModuleId | 'custom'
+
 export type PreferredUnits = {
   weight: 'lb' | 'kg'
   height: 'ft_in' | 'cm'
@@ -168,6 +170,8 @@ export type UserProfile = {
   pets: Pet[]
   preferredUnits: PreferredUnits
   enabledModules: ModuleId[]
+  /** Selected focus areas — drives modules, widgets, and recommendations */
+  focusAreas: FocusAreaId[]
   foodPreferences: FoodPreferences
   nutritionGoals: NutritionGoals
   fitness: FitnessSettings

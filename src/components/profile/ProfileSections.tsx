@@ -1,13 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useProfileStore } from '@/modules/profile'
-import { matchPresetForGoal } from '@/modules/intelligence'
+import { useStudyStore } from '@/modules/study'
+import { FOCUS_AREA_OPTIONS } from '@/modules/modules/focusAreas'
 import { useIntelligenceStore } from '@/modules/intelligence'
 import type { NotificationKind } from '@/modules/intelligence'
-import {
-  ALL_MODULE_IDS,
-  MODULE_LABELS,
-  MODULE_DESCRIPTIONS,
-} from '@/modules/modules'
 import { SCHEDULE_VARIABILITY_OPTIONS } from '@/modules/onboarding/types'
 import type { GymType } from '@/modules/onboarding/types'
 import { CollapsibleSection } from './CollapsibleSection'
@@ -119,7 +116,7 @@ export function ProfileHealthSection() {
             <WeightInput
               value={profile.currentWeight}
               onChange={(v) => updateField('currentWeight', v)}
-              placeholder="236.8"
+              placeholder="132.4"
               variant="light"
               size="md"
               unit={profile.preferredUnits.weight}
@@ -156,46 +153,96 @@ export function ProfileHealthSection() {
 
 export function ProfileGoalsSection() {
   const mainGoal = useProfileStore((s) => s.profile.mainGoal)
+  const focusAreas = useProfileStore((s) => s.profile.focusAreas)
   const updateField = useProfileStore((s) => s.updateField)
-  const preset = mainGoal ? matchPresetForGoal(mainGoal) : null
+
+  if (!focusAreas.includes('custom')) return null
 
   return (
-    <CollapsibleSection title="Main Goal" description="What matters most right now">
+    <CollapsibleSection title="Custom Focus" description="Describe your personal focus area">
       <FieldTextarea
         value={mainGoal}
         onChange={(v) => updateField('mainGoal', v)}
-        placeholder="Describe your main goal…"
+        placeholder="Describe what you are working toward…"
         rows={3}
       />
-      {preset && (
-        <p className="text-xs text-slate-400 mt-2">
-          Personalized for {preset.label} — modules adapt automatically.
-        </p>
-      )}
     </CollapsibleSection>
   )
 }
 
 export function ProfileModulesSection() {
-  const enabledModules = useProfileStore((s) => s.profile.enabledModules)
-  const toggleModule = useProfileStore((s) => s.toggleModule)
+  const focusAreas = useProfileStore((s) => s.profile.focusAreas)
+  const toggleFocusArea = useProfileStore((s) => s.toggleFocusArea)
 
   return (
     <CollapsibleSection
-      title="Modules"
-      description="Choose what JourneyOS tracks for you"
+      title="Focus Areas"
+      description="Choose what JourneyOS tracks and recommends for you"
       defaultOpen
     >
       <div className="space-y-2">
-        {ALL_MODULE_IDS.map((id) => (
+        {FOCUS_AREA_OPTIONS.map((option) => (
           <ModuleToggle
-            key={id}
-            label={MODULE_LABELS[id]}
-            description={MODULE_DESCRIPTIONS[id]}
-            enabled={enabledModules.includes(id)}
-            onToggle={() => toggleModule(id)}
+            key={option.id}
+            label={option.label}
+            description={option.description}
+            enabled={focusAreas.includes(option.id)}
+            onToggle={() => toggleFocusArea(option.id)}
           />
         ))}
+      </div>
+    </CollapsibleSection>
+  )
+}
+
+export function ProfileStudySettingsSection() {
+  const studyEnabled = useProfileStore((s) => s.isModuleEnabled('study'))
+  const studyingFor = useStudyStore((s) => s.studyingFor)
+  const examDate = useStudyStore((s) => s.examDate)
+  const dailyGoalMinutes = useStudyStore((s) => s.dailyGoalMinutes)
+  const updateSettings = useStudyStore((s) => s.updateSettings)
+  const hydrate = useStudyStore((s) => s.hydrate)
+
+  useEffect(() => {
+    if (studyEnabled) hydrate()
+  }, [studyEnabled, hydrate])
+
+  if (!studyEnabled) {
+    return (
+      <CollapsibleSection title="Study" description="Enable Study in Focus Areas">
+        <p className="text-sm text-slate-500">
+          Turn on the Study focus area to track sessions, goals, and exam dates.
+        </p>
+      </CollapsibleSection>
+    )
+  }
+
+  return (
+    <CollapsibleSection title="Study" description="What you are learning and your daily goal">
+      <div>
+        <FieldLabel>What are you studying for?</FieldLabel>
+        <FieldInput
+          value={studyingFor}
+          onChange={(v) => updateSettings({ studyingFor: v })}
+          placeholder="e.g. Nursing license, Spanish, Calculus"
+        />
+      </div>
+      <div>
+        <FieldLabel>Exam or test date (optional)</FieldLabel>
+        <FieldInput
+          type="date"
+          value={examDate}
+          onChange={(v) => updateSettings({ examDate: v })}
+        />
+      </div>
+      <div>
+        <FieldLabel>Daily study goal (minutes)</FieldLabel>
+        <FieldInput
+          type="number"
+          value={String(dailyGoalMinutes)}
+          onChange={(v) => updateSettings({ dailyGoalMinutes: Math.max(0, Number(v) || 0) })}
+          placeholder="30"
+        />
       </div>
     </CollapsibleSection>
   )
@@ -526,7 +573,7 @@ export function ProfilePetsSection() {
               <FieldInput
                 value={pet.name}
                 onChange={(v) => updatePet(index, { name: v })}
-                placeholder="Bruno"
+                placeholder="Max"
               />
             </div>
             <div>

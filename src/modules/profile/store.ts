@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { loadDailyStore, saveDailyStore } from '@/modules/daily/storage'
 import { isModuleEnabled } from '@/modules/modules/engine'
-import type { ModuleId } from '@/modules/onboarding/types'
+import type { FocusAreaId, ModuleId } from '@/modules/onboarding/types'
+import { syncModulesFromFocusAreas } from '@/modules/modules/focusAreas'
 import type {
   FitnessSettings,
   FoodPreferences,
@@ -20,7 +21,7 @@ import {
   loadOnboardingData,
   persistProfile,
 } from '@/modules/onboarding/storage'
-import { applyBrunoDefaults, emptyPet, isJadyProfile } from '@/modules/pets/petUtils'
+import { emptyPet } from '@/modules/pets/petUtils'
 import { useAchievementStore } from '@/modules/achievements/store'
 import { getTimelineMessage } from '@/modules/achievements/messages'
 import { useDailyStore } from '@/modules/daily/store'
@@ -53,6 +54,7 @@ interface ProfileStore {
   updateJourneyMemory: (partial: Partial<JourneyMemory>) => void
   updatePreferredUnits: (partial: Partial<PreferredUnits>) => void
   toggleModule: (moduleId: ModuleId) => void
+  toggleFocusArea: (focusId: FocusAreaId) => void
   setEnabledModules: (modules: ModuleId[]) => void
   addPet: () => void
   updatePet: (index: number, data: Partial<Pet>) => void
@@ -228,11 +230,16 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   },
 
   toggleModule: (moduleId) => {
-    const current = get().profile.enabledModules
-    const enabledModules = current.includes(moduleId)
-      ? current.filter((m) => m !== moduleId)
-      : [...current, moduleId]
-    const profile = { ...get().profile, enabledModules }
+    get().toggleFocusArea(moduleId)
+  },
+
+  toggleFocusArea: (focusId) => {
+    const current = get().profile.focusAreas ?? get().profile.enabledModules
+    const focusAreas = current.includes(focusId)
+      ? current.filter((f) => f !== focusId)
+      : [...current, focusId]
+    const enabledModules = syncModulesFromFocusAreas(focusAreas)
+    const profile = { ...get().profile, focusAreas, enabledModules }
     saveProfile(profile, get().onboardingComplete, set)
     useDailyStore.getState().refreshFlowSteps()
   },
@@ -244,7 +251,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   },
 
   addPet: () => {
-    let newPet = emptyPet()
+    const newPet = emptyPet()
     const profile = {
       ...get().profile,
       hasPets: true,
@@ -256,14 +263,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
 
   updatePet: (index, data) => {
     const pets = [...get().profile.pets]
-    let updated: Pet = { ...pets[index], ...data }
-    if (
-      isJadyProfile(get().profile.firstName) &&
-      updated.name.trim().toLowerCase() === 'bruno'
-    ) {
-      updated = applyBrunoDefaults(updated)
-    }
-    pets[index] = updated
+    pets[index] = { ...pets[index], ...data }
     const profile = {
       ...get().profile,
       pets,

@@ -2,7 +2,6 @@ import { getTodayWeekdayName } from '@/modules/daily/schedule'
 import { loadOnboardingData } from '@/modules/onboarding/storage'
 import { isModuleEnabled } from '@/modules/modules/engine'
 import { DEFAULT_WEEKLY_PLAN, getPlanForWeekday } from './defaultPlan'
-import { isJadyProfile, JADY_WEEKLY_PLAN } from './jadyPlan'
 import type {
   AdaptiveWorkoutResult,
   FitnessContext,
@@ -221,13 +220,12 @@ export function getTodayAdaptiveWorkout(dayMode: DayModeId = 'normal'): Adaptive
   if (!data?.profile || !isModuleEnabled(data.profile, 'fitness')) return null
 
   const ctx = buildFitnessContext(data.profile, dayMode)
-  const useJady = isJadyProfile(data.profile.firstName)
-  const plan = getPlanForWeekday(ctx.todayWeekday, useJady)
+  const plan = getPlanForWeekday(ctx.todayWeekday, false)
   if (!plan) return null
 
   return adaptWorkout(plan, ctx)
 }
 
-export function getWeeklyPlan(useJady: boolean): WorkoutPlan[] {
-  return useJady ? JADY_WEEKLY_PLAN : DEFAULT_WEEKLY_PLAN
+export function getWeeklyPlan(): WorkoutPlan[] {
+  return DEFAULT_WEEKLY_PLAN
 }
